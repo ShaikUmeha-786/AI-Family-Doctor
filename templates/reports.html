@@ -22,19 +22,31 @@
     <div class="card">
         <h3>🧪 Medical Reports Analysis</h3>
         <p class="subtitle">
-            Upload your report image OR paste report text to get a simple explanation
+            Upload a report image OR paste report text for explanation
         </p>
 
         <!-- FORM START -->
-        <form method="POST" action="/analyze-report" enctype="multipart/form-data">
+        <form method="POST"
+              action="/analyze-report"
+              enctype="multipart/form-data">
 
             <!-- IMAGE UPLOAD -->
             <label class="image-upload">
                 📷 Upload report image
-                <input type="file" name="report_image" accept="image/*" hidden>
+                <input type="file"
+                       name="report_image"
+                       accept="image/*"
+                       onchange="showFileName(this)"
+                       hidden>
             </label>
 
-            <p style="text-align:center; margin:12px 0; color:#777;">
+            <!-- FILE NAME PREVIEW -->
+            <p id="file-name"
+               style="text-align:center; font-size:13px; color:#555; margin-top:8px;">
+                No image selected
+            </p>
+
+            <p style="text-align:center; margin:14px 0; color:#777;">
                 — OR —
             </p>
 
@@ -47,7 +59,7 @@ WBC: 7200
 Platelets: 2.3 lakh"
                 style="height:180px;"></textarea>
 
-            <button class="primary-btn" style="margin-top:15px;">
+            <button type="submit" class="primary-btn" style="margin-top:15px;">
                 Analyze Report
             </button>
 
@@ -60,6 +72,18 @@ Platelets: 2.3 lakh"
     </p>
 
 </div>
+
+<!-- ================= SMALL UI SCRIPT ================= -->
+<script>
+function showFileName(input) {
+    const fileName = document.getElementById("file-name");
+    if (input.files.length > 0) {
+        fileName.innerText = "Selected file: " + input.files[0].name;
+    } else {
+        fileName.innerText = "No image selected";
+    }
+}
+</script>
 
 </body>
 </html>

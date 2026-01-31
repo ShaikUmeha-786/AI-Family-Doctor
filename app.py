@@ -1,14 +1,17 @@
 from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
+from PIL import Image
+import pytesseract
 
 app = Flask(__name__)
 
-# 🔑 API KEY (move to .env later)
-genai.configure(api_key="AIzaSyCVhS_QRJDmWrq6VkSOzhSZTqP_I6oMUN4")
+# ================= TESSERACT PATH =================
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-# ✅ CONFIRMED WORKING MODEL
+# ================= GEMINI CONFIG =================
+genai.configure(api_key="AIzaSyA3QEwogZHUG0YM3nSt-I6zM9mni9j7bYQ")
+
 model = genai.GenerativeModel("models/gemini-flash-latest")
-
 
 # ================= FAMILY DOCTOR =================
 @app.route("/", methods=["GET", "POST"])
@@ -22,55 +25,33 @@ def home():
 
         prompt = f"""
 You are an AI Family Doctor assistant.
-This is for EDUCATIONAL PURPOSES ONLY.
-You are NOT a licensed medical professional.
+Educational use only. Not a licensed doctor.
 
-Patient Details:
 Symptoms: {symptoms}
 Age: {age}
 Gender: {gender}
 
-STRICT RULES:
-- Respond ONLY in HTML
-- Use <h3> for headings
-- Use <ul><li> for bullet points
-- Use emojis in headings
-- NO markdown
-- NO paragraphs
-- NO extra text
-
-FORMAT EXACTLY LIKE THIS:
+Respond ONLY in HTML.
+Use <h3> headings and <ul><li> bullets.
+No paragraphs. No markdown.
 
 <h3>🩺 Possible Causes</h3>
-<ul>
-<li>Point</li>
-<li>Point</li>
-</ul>
+<ul><li>Point</li></ul>
 
 <h3>🧠 What It Means</h3>
-<ul>
-<li>Point</li>
-</ul>
+<ul><li>Point</li></ul>
 
 <h3>💊 Common OTC Medicines (India)</h3>
-<ul>
-<li>Medicine name</li>
-</ul>
+<ul><li>Medicine</li></ul>
 
 <h3>🏠 Home Care</h3>
-<ul>
-<li>Tip</li>
-</ul>
+<ul><li>Tip</li></ul>
 
 <h3>🚨 See a Doctor If</h3>
-<ul>
-<li>Warning</li>
-</ul>
+<ul><li>Warning</li></ul>
 
 <h3>⚠️ Disclaimer</h3>
-<ul>
-<li>Educational use only. Not medical advice.</li>
-</ul>
+<ul><li>Educational only</li></ul>
 """
 
         try:
@@ -96,17 +77,13 @@ def get_calories():
         return jsonify({"error": "No food item provided"})
 
     prompt = f"""
-You are a nutrition assistant.
-
 Food item: {food}
 
-Give output in this exact format:
+Give output:
 Food:
 Approx Quantity:
 Calories (kcal):
 Benefits:
-
-Keep it simple and short.
 """
 
     try:
@@ -122,50 +99,46 @@ def reports():
     return render_template("reports.html")
 
 
-# ================= REPORT ANALYSIS RESULT PAGE =================
+# ================= REPORT ANALYSIS =================
 @app.route("/analyze-report", methods=["POST"])
 def analyze_report():
     report_text = request.form.get("report_text")
+    image = request.files.get("report_image")
+
+    # DEBUG (keep for now)
+    print("FILES:", request.files)
+
+    # If image uploaded → OCR
+    if image and image.filename != "":
+        print("IMAGE RECEIVED:", image.filename)
+        img = Image.open(image)
+        report_text = pytesseract.image_to_string(img)
 
     if not report_text:
-        return "No report text provided"
+        return "No report text or image provided"
 
     prompt = f"""
 You are a medical report explanation assistant.
-This is for EDUCATIONAL PURPOSES ONLY.
+Educational use only.
 
-Given report text:
+Report text:
 {report_text}
 
-STRICT RULES:
-- Respond ONLY in HTML
-- Use <h3> for headings
-- Use <ul><li> for bullet points
-- Simple language
-- NO paragraphs
-- NO markdown
-
-FORMAT:
+Respond ONLY in HTML.
+Use <h3> and <ul><li>.
+No paragraphs. No markdown.
 
 <h3>📄 Report Summary</h3>
-<ul>
-<li>Point</li>
-</ul>
+<ul><li>Point</li></ul>
 
 <h3>🧠 What It Means</h3>
-<ul>
-<li>Point</li>
-</ul>
+<ul><li>Point</li></ul>
 
 <h3>🚨 When to See a Doctor</h3>
-<ul>
-<li>Point</li>
-</ul>
+<ul><li>Point</li></ul>
 
 <h3>⚠️ Disclaimer</h3>
-<ul>
-<li>Educational use only. Not medical advice.</li>
-</ul>
+<ul><li>Educational only</li></ul>
 """
 
     try:
@@ -175,6 +148,6 @@ FORMAT:
         return f"Error: {e}"
 
 
-# ================= RUN APP =================
+# ================= RUN =================
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0",port=10000)
