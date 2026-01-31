@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, jsonify
+import os
 import google.generativeai as genai
 from PIL import Image
 import pytesseract
+
 
 app = Flask(__name__)
 
@@ -9,7 +11,7 @@ app = Flask(__name__)
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # ================= GEMINI CONFIG =================
-genai.configure(api_key="AIzaSyA3QEwogZHUG0YM3nSt-I6zM9mni9j7bYQ")
+genai.configure(api_key=os.getenv("KEY"))
 
 model = genai.GenerativeModel("models/gemini-flash-latest")
 
