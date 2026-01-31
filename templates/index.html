@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Family Doctor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+    <div class="logo">🩺 AI Family Doctor</div>
+    <div class="nav-links">
+    <a href="/">Family Doctor</a>
+    <a href="/calories">Calories</a>
+    <a href="/reports">Reports</a>
+</div>
+
+</div>
+
+<div class="container">
+
+    <!-- ================= FAMILY DOCTOR SECTION ================= -->
+    <div id="doctor-section">
+
+        <!-- INPUT FORM (HIDDEN AFTER ANALYZE) -->
+        <div id="doctor-form" class="card"
+             {% if response %}style="display:none"{% endif %}>
+            <h3>Your Personal Health Assistant</h3>
+            <p class="subtitle">Simple, fast, educational health guidance</p>
+
+            <form method="POST">
+                <textarea name="symptoms" placeholder="Describe your symptoms..." required></textarea>
+
+                <div class="row">
+                    <input type="number" name="age" placeholder="Age" required>
+                    <select name="gender" required>
+                        <option value="">Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
+                </div>
+
+                <button type="submit">Analyze Health</button>
+            </form>
+        </div>
+
+        <!-- RESULT (ONLY SHOWN AFTER ANALYZE) -->
+        {% if response %}
+        <div id="doctor-result" class="card result">
+            <div class="ai-response">
+                {{ response | safe }}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- ================= CALORIES SECTION ================= -->
+    <div id="calories-section" class="card hidden">
+        <h3>🍎 Calories & Nutrition</h3>
+        <p class="subtitle">Daily calorie needs & food intake</p>
+        <p style="color:#666;">
+            (We will build this next)
+        </p>
+    </div>
+
+    <!-- ================= REPORTS SECTION ================= -->
+    <div id="reports-section" class="card hidden">
+        <h3>🧪 Medical Reports</h3>
+        <p class="subtitle">Understand your lab reports</p>
+        <p style="color:#666;">
+            (We will build this next)
+        </p>
+    </div>
+
+    <p class="disclaimer">
+        ⚠️ Educational use only. Always consult a doctor.
+    </p>
+
+</div>
+
+<!-- ================= JAVASCRIPT ================= -->
+<script>
+function showDoctor() {
+    document.getElementById("doctor-section").style.display = "block";
+    document.getElementById("doctor-form").style.display = "block";
+
+    const result = document.getElementById("doctor-result");
+    if (result) result.style.display = "none";
+
+    document.getElementById("calories-section").style.display = "none";
+    document.getElementById("reports-section").style.display = "none";
+}
+
+function showCalories() {
+    document.getElementById("doctor-section").style.display = "none";
+    document.getElementById("calories-section").style.display = "block";
+    document.getElementById("reports-section").style.display = "none";
+}
+
+function showReports() {
+    document.getElementById("doctor-section").style.display = "none";
+    document.getElementById("calories-section").style.display = "none";
+    document.getElementById("reports-section").style.display = "block";
+}
+</script>
+
+</body>
+</html>

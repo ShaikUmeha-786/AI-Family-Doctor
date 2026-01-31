@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">🩺 AI Family Doctor</div>
+    <div class="nav-links">
+        <a href="/">Family Doctor</a>
+        <a href="/calories">Calories</a>
+        <a href="/reports">Reports</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h3>📊 Report Analysis Result</h3>
+
+        <div class="ai-response">
+            {{ result | safe }}
+        </div>
+    </div>
+
+    <div class="card">
+        <a href="/reports" class="primary-btn">
+            ⬅ Analyze Another Report
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

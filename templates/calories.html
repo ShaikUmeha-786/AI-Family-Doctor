@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calories & Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+    <div class="logo">🩺 AI Family Doctor</div>
+    <div class="nav-links">
+        <a href="/">Family Doctor</a>
+        <a href="/calories">Calories</a>
+        <a href="/reports">Reports</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- ================= CALORIES CHECKER ================= -->
+    <div class="card">
+        <h3>🍎 Calories & Nutrition Checker</h3>
+        <p class="subtitle">Enter any food item</p>
+
+        <input
+            type="text"
+            id="food-input"
+            class="calorie-input"
+            placeholder="e.g. 1 bowl of rice, chicken biryani">
+
+        <button class="primary-btn" onclick="checkCalories()">
+            Check Calories
+        </button>
+
+        <!-- OUTPUT -->
+        <div id="calorie-result" class="placeholder-text" style="margin-top:15px;"></div>
+    </div>
+
+    <!-- ================= BMI ================= -->
+    <div class="card">
+        <h3>⚖️ BMI Calculator</h3>
+
+        <div class="row">
+            <input type="number" id="bmi-weight" placeholder="Weight (kg)">
+            <input type="number" id="bmi-height" placeholder="Height (cm)">
+        </div>
+
+        <button class="primary-btn" onclick="calculateBMI()" style="margin-top:15px;">
+            Calculate BMI
+        </button>
+
+        <p id="bmi-result" class="placeholder-text" style="margin-top:10px;"></p>
+    </div>
+
+    <!-- ================= WATER ================= -->
+    <div class="card">
+        <h3>💧 Daily Water Intake</h3>
+
+        <div class="row">
+            <input type="number" id="water-weight" placeholder="Weight (kg)">
+            <select id="activity-level">
+                <option value="">Activity Level</option>
+                <option value="low">Low</option>
+                <option value="moderate">Moderate</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+
+        <button class="primary-btn" onclick="calculateWater()" style="margin-top:15px;">
+            Calculate Water Intake
+        </button>
+
+        <p id="water-result" class="placeholder-text" style="margin-top:10px;"></p>
+    </div>
+
+    <p class="disclaimer">
+        ⚠️ Educational use only. Values are approximate.
+    </p>
+
+</div>
+
+<!-- ================= JAVASCRIPT ================= -->
+<script>
+function checkCalories() {
+    const food = document.getElementById("food-input").value;
+    const result = document.getElementById("calorie-result");
+
+    if (!food) {
+        result.innerText = "Please enter a food item.";
+        return;
+    }
+
+    result.innerText = "Analyzing food...";
+
+    const formData = new FormData();
+    formData.append("food", food);
+
+    fetch("/get-calories", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            result.innerText = data.error;
+        } else {
+            result.innerHTML = `
+                <div class="calorie-output">
+                    <div class="title">🍽️ Nutrition Summary</div>
+                    ${data.result
+                        .split("\n")
+                        .map(line => {
+                            if (!line.trim()) return "";
+                            const parts = line.split(":");
+                            if (parts.length < 2)
+                                return `<div class="item">${line}</div>`;
+                            return `<div class="item">
+                                <span class="label">${parts[0]}:</span>
+                                ${parts.slice(1).join(":")}
+                            </div>`;
+                        })
+                        .join("")}
+                </div>
+            `;
+        }
+    })
+    .catch(() => {
+        result.innerText = "Something went wrong. Please try again.";
+    });
+}
+
+function calculateBMI() {
+    const w = document.getElementById("bmi-weight").value;
+    const h = document.getElementById("bmi-height").value;
+    const r = document.getElementById("bmi-result");
+
+    if (!w || !h) {
+        r.innerText = "Enter weight and height.";
+        return;
+    }
+
+    const bmi = (w / ((h/100) ** 2)).toFixed(1);
+    r.innerText = `Your BMI is ${bmi}`;
+}
+
+function calculateWater() {
+    const w = document.getElementById("water-weight").value;
+    const a = document.getElementById("activity-level").value;
+    const r = document.getElementById("water-result");
+
+    if (!w || !a) {
+        r.innerText = "Enter weight and activity level.";
+        return;
+    }
+
+    let ml = 35;
+    if (a === "moderate") ml = 40;
+    if (a === "high") ml = 45;
+
+    r.innerText = `Drink about ${(w * ml / 1000).toFixed(2)} liters per day.`;
+}
+</script>
+
+</body>
+</html>

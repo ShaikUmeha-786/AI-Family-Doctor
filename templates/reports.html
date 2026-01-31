@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical Reports</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+    <div class="logo">🩺 AI Family Doctor</div>
+    <div class="nav-links">
+        <a href="/">Family Doctor</a>
+        <a href="/calories">Calories</a>
+        <a href="/reports">Reports</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- ================= REPORT INPUT CARD ================= -->
+    <div class="card">
+        <h3>🧪 Medical Reports Analysis</h3>
+        <p class="subtitle">
+            Upload your report image OR paste report text to get a simple explanation
+        </p>
+
+        <!-- FORM START -->
+        <form method="POST" action="/analyze-report" enctype="multipart/form-data">
+
+            <!-- IMAGE UPLOAD -->
+            <label class="image-upload">
+                📷 Upload report image
+                <input type="file" name="report_image" accept="image/*" hidden>
+            </label>
+
+            <p style="text-align:center; margin:12px 0; color:#777;">
+                — OR —
+            </p>
+
+            <!-- TEXT AREA -->
+            <textarea
+                name="report_text"
+                placeholder="Example:
+Hemoglobin: 12.5 g/dL
+WBC: 7200
+Platelets: 2.3 lakh"
+                style="height:180px;"></textarea>
+
+            <button class="primary-btn" style="margin-top:15px;">
+                Analyze Report
+            </button>
+
+        </form>
+        <!-- FORM END -->
+    </div>
+
+    <p class="disclaimer">
+        ⚠️ Educational use only. Always consult a qualified doctor.
+    </p>
+
+</div>
+
+</body>
+</html>
